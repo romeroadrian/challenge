@@ -1,14 +1,14 @@
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-etherscan");
+require('dotenv').config();
 
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  const accounts = await hre.ethers.getSigners();
+task("pool", "Prints the total amount of ETH in the pool")
+  .addParam("address", "The ETH Pool contract address")
+  .setAction( async (taskArgs, hre) => {
+    const balance = await hre.ethers.provider.getBalance(taskArgs.address);
 
-  for (const account of accounts) {
-    console.log(account.address);
-  }
-});
+    console.log(`Pool balance: ${hre.ethers.utils.formatEther(balance)} ETH`);
+  });
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
@@ -18,4 +18,13 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
+  networks: {
+    rinkeby: {
+      accounts: [process.env.PRIVATE_KEY],
+      url: process.env.NODE_URL
+    }
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
+  }
 };
